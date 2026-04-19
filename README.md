@@ -1,24 +1,44 @@
-# 🚀 Ask My Docs — Production-Grade RAG System
+# 🚀 Ask My Docs — Production RAG System
 
-A **multi-session, production-ready Retrieval-Augmented Generation (RAG)** application that allows users to upload documents (PDF/DOCX) and interact with them through a conversational interface.
+A **multi-session Retrieval-Augmented Generation (RAG)** application that allows users to upload documents (PDF/DOCX) and chat with them intelligently.
+
+This system implements **hybrid retrieval (BM25 + vector search), reranking, and session-based isolation**, similar to real-world enterprise AI systems.
 
 ---
 
 # 🧠 Features
 
-* Hybrid Retrieval (**BM25 + Vector Search**)
-* Cross-Encoder Reranking
-* Multi-session chat (ChatGPT-like)
-* Session-based document isolation
-* Groq-powered fast LLM responses
-* Streamlit UI + FastAPI backend
+* 🔍 Hybrid Retrieval (**BM25 + ChromaDB vector search**)
+* ⚡ Cross-Encoder Reranking (BGE Reranker)
+* 💬 Multi-session chat (ChatGPT-like UI)
+* 📄 PDF & DOCX document ingestion
+* 🔒 Session-based document isolation (no data mixing)
+* ⚡ Fast LLM responses using **Groq (LLaMA3)**
+
+---
+
+# 🏗️ Architecture
+
+```text
+User (Streamlit UI)
+        ↓
+FastAPI Backend
+        ↓
+Hybrid Retrieval (BM25 + Vector DB)
+        ↓
+Reranker (Cross Encoder)
+        ↓
+Groq LLM (LLaMA3)
+        ↓
+Answer + Sources
+```
 
 ---
 
 # 📁 Project Structure
 
-```
-rag-app/
+```text
+RAG-APP/
 │
 ├── app/
 │   ├── api/
@@ -44,9 +64,9 @@ rag-app/
 
 ## 1️⃣ Clone Repository
 
-```
-git clone https://github.com/your-username/rag-app.git
-cd rag-app
+```bash
+git clone https://github.com/Adi0257/Local_Voice_Asistant.git
+cd Local_Voice_Asistant
 ```
 
 ---
@@ -55,31 +75,24 @@ cd rag-app
 
 ### Windows
 
-```
+```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
-### Mac/Linux
-
-```
-python3 -m venv venv
-source venv/bin/activate
 ```
 
 ---
 
 ## 3️⃣ Install Dependencies
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 4️⃣ Install Additional Required Packages (Important)
+## 4️⃣ Install Extra Required Packages
 
-```
+```bash
 pip install langchain langchain-community langchain-core langchain-text-splitters
 pip install langchain-huggingface langchain-chroma
 pip install sentence-transformers chromadb fastapi uvicorn streamlit
@@ -88,80 +101,71 @@ pip install langchain-groq python-docx pypdf
 
 ---
 
-## 5️⃣ Set Groq API Key
+# 🔐 API Key Setup
 
-### Windows
+⚠️ The Groq API key is currently **hardcoded inside the project**:
 
-```
-setx GROQ_API_KEY "your_api_key_here"
-```
-
-### Mac/Linux
-
-```
-export GROQ_API_KEY="your_api_key_here"
+```text
+app/core/generator.py
 ```
 
-Restart terminal after setting.
+> Note: For production use, it is recommended to store API keys using environment variables.
 
 ---
 
-# 🧹 One-Time Cleanup (VERY IMPORTANT)
+# 🧹 One-Time Cleanup (Important)
 
-Before first run:
+Before running for the first time:
 
-### Windows (PowerShell)
+### Windows
 
-```
+```bash
 Remove-Item -Recurse -Force .\data\chroma
 Remove-Item -Recurse -Force .\data\processed
 ```
 
-### Mac/Linux
-
-```
-rm -rf data/chroma
-rm -rf data/processed
-```
-
 ---
 
-# 🚀 Running the Project (STEP-BY-STEP)
+# 🚀 Running the Project
 
-## 🔴 STEP 1: Start Backend (MUST FIRST)
+## 🔴 Step 1: Start Backend
 
-Open Terminal 1:
-
-```
+```bash
+cd app
+cd ..
 uvicorn app.main:app --reload
 ```
 
-You should see:
+👉 Backend runs at:
 
-```
-Uvicorn running on http://127.0.0.1:8000
+```text
+http://localhost:8000
 ```
 
 ---
 
-## 🔍 Verify Backend
+## 🟢 Step 2: Start UI (New Terminal)
 
-Open in browser:
-
+```bash
+cd ui
+streamlit run app.py
 ```
-http://localhost:8000/docs
-```
-
-If this opens → backend is working ✅
 
 ---
 
-## 🟢 STEP 2: Start Streamlit UI
+# ⚠️ IMPORTANT
 
-Open Terminal 2:
+Always follow this order:
 
+```text
+1. Start Backend
+2. Start UI
 ```
-streamlit run ui/app.py
+
+If not:
+
+```text
+ConnectionRefusedError ❌
 ```
 
 ---
@@ -176,93 +180,51 @@ streamlit run ui/app.py
 
 ---
 
-# ⚠️ Important Rules
+# 🧠 Example Queries
 
-## ✅ Always Run Backend First
-
-```
-Backend → THEN UI
-```
-
-If not:
-
-```
-ConnectionRefusedError ❌
+```text
+- What is the name of the person?
+- Which company does he work for?
+- What skills are mentioned?
 ```
 
 ---
 
-# 🧠 Session Isolation
+# 🔒 Session Isolation
 
-Each chat session has:
+Each chat session:
 
-* Separate vector database
-* Separate BM25 index
-* Separate chat memory
+* Uses a separate Chroma collection
+* Has its own BM25 index
+* Maintains independent chat history
 
-👉 No data mixing across chats
+👉 No mixing between documents
 
 ---
 
-# ❗ Common Errors & Fixes
+# ❗ Common Errors
 
-## 1. Connection Refused
+## ❌ Backend Not Running
 
-```
-Error: localhost:8000 refused connection
+```text
+ConnectionRefusedError
 ```
 
 ### Fix:
 
-```
-Run backend first:
+```bash
 uvicorn app.main:app --reload
 ```
 
 ---
 
-## 2. Wrong Answers / Mixed Data
+## ❌ Wrong Answers
 
 ### Fix:
 
-```
-Delete old data:
+```bash
 Remove-Item -Recurse -Force .\data\chroma
 Remove-Item -Recurse -Force .\data\processed
-```
-
----
-
-## 3. Module Not Found
-
-### Fix:
-
-```
-pip install -r requirements.txt
-```
-
----
-
-## 4. Groq API Error
-
-### Fix:
-
-```
-Check API key:
-echo %GROQ_API_KEY%
-```
-
----
-
-# 🔥 Example Workflow
-
-```
-1. Start backend
-2. Start UI
-3. Upload resume.pdf
-4. Click Process
-5. Ask: "What is the company name?"
-6. Get accurate answer
 ```
 
 ---
@@ -270,12 +232,12 @@ echo %GROQ_API_KEY%
 # 🛠️ Tech Stack
 
 * FastAPI (Backend)
-* Streamlit (UI)
+* Streamlit (Frontend)
 * ChromaDB (Vector DB)
-* HuggingFace (Embeddings)
-* BM25 (Keyword search)
-* BGE Reranker
-* Groq (LLM)
+* HuggingFace Embeddings (BGE)
+* BM25 Retriever
+* Cross Encoder Reranker
+* Groq LLM (LLaMA3)
 
 ---
 
@@ -284,7 +246,7 @@ echo %GROQ_API_KEY%
 * Query rewriting (better accuracy)
 * Streaming responses (typing effect)
 * Document viewer with highlights
-* Cloud deployment (Docker, AWS)
+* Deployment (Docker + Cloud)
 
 ---
 
@@ -303,12 +265,10 @@ If you like this project, give it a ⭐ on GitHub!
 
 # 💥 Final Note
 
-This is a **production-level RAG system** with:
+This is a **production-style RAG system** implementing:
 
 * Hybrid retrieval
 * Multi-session architecture
-* Document isolation
+* Document-level isolation
 
-👉 Similar to real-world enterprise AI systems.
-
----
+👉 Similar to systems used in real-world AI applications.

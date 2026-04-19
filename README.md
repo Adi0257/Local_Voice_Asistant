@@ -8,12 +8,12 @@ This system implements **hybrid retrieval (BM25 + vector search), reranking, and
 
 # 🧠 Features
 
-* 🔍 Hybrid Retrieval (**BM25 + ChromaDB vector search**)
-* ⚡ Cross-Encoder Reranking (BGE Reranker)
-* 💬 Multi-session chat (ChatGPT-like UI)
-* 📄 PDF & DOCX document ingestion
-* 🔒 Session-based document isolation (no data mixing)
-* ⚡ Fast LLM responses using **Groq (LLaMA3)**
+*  Hybrid Retrieval (**BM25 + ChromaDB vector search**)
+*  Cross-Encoder Reranking (BGE Reranker)
+*  Multi-session chat (ChatGPT-like UI)
+*  PDF & DOCX document ingestion
+*  Session-based document isolation (no data mixing)
+*  Fast LLM responses using **Groq (LLaMA3)**
 
 ---
 
